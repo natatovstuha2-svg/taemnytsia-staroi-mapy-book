@@ -1,326 +1,166 @@
-:root {
-  --ink: #17332d;
-  --muted: #5f726e;
-  --accent: #0d7b72;
-  --paper: rgba(255, 255, 255, 0.94);
-  --paper-solid: #ffffff;
-  --shadow: rgba(29, 51, 57, 0.20);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const bookBase = document.getElementById("bookBase");
+  const leftPage = document.getElementById("leftPage");
+  const rightPage = document.getElementById("rightPage");
 
-* {
-  box-sizing: border-box;
-}
+  const rightSheet = document.getElementById("turnSheetRight");
+  const rightFront = document.getElementById("turnFrontRight");
+  const rightBack = document.getElementById("turnBackRight");
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-}
+  const leftSheet = document.getElementById("turnSheetLeft");
+  const leftFront = document.getElementById("turnFrontLeft");
+  const leftBack = document.getElementById("turnBackLeft");
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  color: var(--ink);
-  background: #edf7f8;
-}
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const indicator = document.getElementById("spreadIndicator");
 
-.app {
-  width: 100%;
-  height: 100dvh;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) 58px;
-  align-items: center;
-  justify-items: center;
-  padding: 8px 14px 8px;
-}
+  const START_BASE = "assets/images/00_book_start.png";
+  const SPREAD_BASE = "assets/images/01_book_spread.png";
 
-.book-shell {
-  position: relative;
-  width: min(96vw, calc((100dvh - 74px) * 1.5));
-  max-width: 1500px;
-  aspect-ratio: 3 / 2;
-  max-height: calc(100dvh - 74px);
-  perspective: 2400px;
-  isolation: isolate;
-}
+  const spreads = [
+    {
+      left: null,
+      right: "page-1",
+      base: START_BASE
+    },
+    {
+      left: "page-2",
+      right: "page-3",
+      base: SPREAD_BASE
+    },
+    {
+      left: "page-4",
+      right: "page-5",
+      base: SPREAD_BASE
+    },
+    {
+      left: "page-6",
+      right: "page-7",
+      base: SPREAD_BASE
+    }
+  ];
 
-.book-base {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  user-select: none;
-  pointer-events: none;
-  filter: drop-shadow(0 18px 30px var(--shadow));
-  z-index: 1;
-}
+  let spreadIndex = 0;
+  let animating = false;
+  let pointerStartX = null;
 
-/* Безпечні внутрішні зони сторінок */
-.page-zone {
-  position: absolute;
-  top: 5%;
-  height: 89.6%;
-  overflow: hidden;
-  z-index: 5;
-}
+  function templateHTML(id) {
+    if (!id) return "";
 
-.page-zone-left {
-  left: 5%;
-  width: 42.9%;
-}
-
-.page-zone-right {
-  left: 52.1%;
-  width: 42.9%;
-}
-
-.page-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.first-page,
-.flowing-page {
-  padding: 5.8% 7.2% 5.5%;
-  display: flex;
-  flex-direction: column;
-}
-
-.story-title {
-  margin: 0 0 4.2%;
-  font-weight: 850;
-  font-size: clamp(22px, 2.05vw, 35px);
-  line-height: 1.05;
-  color: var(--accent);
-}
-
-.story-copy {
-  font-size: clamp(15px, 1.23vw, 21px);
-  line-height: 1.55;
-  letter-spacing: 0.005em;
-}
-
-.story-copy p {
-  margin: 0 0 0.92em;
-}
-
-.story-copy p:last-child {
-  margin-bottom: 0;
-}
-
-.dialogue {
-  font-weight: 620;
-  color: #294a44;
-}
-
-.illustration-inset {
-  margin: auto 0 0;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 1.8% / 2.4%;
-  box-shadow: 0 8px 18px rgba(23, 51, 45, 0.11);
-  background: #eef5f4;
-}
-
-.illustration-bottom {
-  height: 39%;
-}
-
-.short-inset {
-  height: 34%;
-}
-
-.illustration-inset img,
-.illustration-full img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.illustration-inset img {
-  object-position: center 36%;
-}
-
-.image-led-page {
-  padding: 3.5% 4.2%;
-  display: flex;
-  flex-direction: column;
-  gap: 2.3%;
-}
-
-.illustration-full {
-  margin: 0;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  border-radius: 1.6% / 1.8%;
-  box-shadow: 0 8px 20px rgba(23, 51, 45, 0.10);
-}
-
-.illustration-full img {
-  object-position: center;
-}
-
-.image-caption {
-  flex: 0 0 auto;
-  padding: 0.2% 1.2% 0.5%;
-  font-size: clamp(14px, 1.07vw, 18px);
-  line-height: 1.42;
-  color: var(--ink);
-}
-
-.caption-large {
-  font-size: clamp(13px, 1vw, 17px);
-}
-
-/* Аркуш, який перегортається поверх постійної книжкової основи */
-.turn-sheet {
-  position: absolute;
-  top: 5%;
-  width: 42.9%;
-  height: 89.6%;
-  transform-style: preserve-3d;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 20;
-}
-
-.turn-sheet-right {
-  left: 50%;
-  transform-origin: left center;
-}
-
-.turn-sheet-left {
-  left: 7.1%;
-  transform-origin: right center;
-}
-
-.sheet-face {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  backface-visibility: hidden;
-  background: var(--paper);
-  box-shadow:
-    inset 0 0 28px rgba(20, 45, 50, 0.035),
-    0 5px 18px rgba(20, 45, 50, 0.10);
-}
-
-.sheet-back {
-  transform: rotateY(180deg);
-}
-
-.turn-sheet.turn-next {
-  opacity: 1;
-  animation: flipNext 920ms cubic-bezier(.34, .05, .19, .98) forwards;
-}
-
-.turn-sheet.turn-prev {
-  opacity: 1;
-  animation: flipPrev 920ms cubic-bezier(.34, .05, .19, .98) forwards;
-}
-
-@keyframes flipNext {
-  0% {
-    transform: rotateY(0deg);
-    filter: brightness(1);
+    const template = document.getElementById(id);
+    return template ? template.innerHTML : "";
   }
 
-  46% {
-    filter: brightness(.93);
+  function renderSpread(index) {
+    const spread = spreads[index];
+
+    bookBase.src = spread.base;
+    leftPage.innerHTML = templateHTML(spread.left);
+    rightPage.innerHTML = templateHTML(spread.right);
+
+    indicator.textContent = `${index + 1} / ${spreads.length}`;
+
+    prevBtn.disabled = index === 0 || animating;
+    nextBtn.disabled = index === spreads.length - 1 || animating;
   }
 
-  100% {
-    transform: rotateY(-180deg);
-    filter: brightness(1);
-  }
-}
+  function clearTurnSheets() {
+    rightSheet.className = "turn-sheet turn-sheet-right";
+    leftSheet.className = "turn-sheet turn-sheet-left";
 
-@keyframes flipPrev {
-  0% {
-    transform: rotateY(0deg);
-    filter: brightness(1);
+    rightFront.innerHTML = "";
+    rightBack.innerHTML = "";
+    leftFront.innerHTML = "";
+    leftBack.innerHTML = "";
   }
 
-  46% {
-    filter: brightness(.93);
+  function nextSpread() {
+    if (animating || spreadIndex >= spreads.length - 1) return;
+
+    animating = true;
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+
+    const current = spreads[spreadIndex];
+    const next = spreads[spreadIndex + 1];
+
+    rightFront.innerHTML = templateHTML(current.right);
+    rightBack.innerHTML = templateHTML(next.left);
+
+    rightPage.innerHTML = templateHTML(next.right);
+
+    setTimeout(() => {
+      bookBase.src = next.base;
+    }, 390);
+
+    rightSheet.classList.add("turn-next");
+
+    setTimeout(() => {
+      spreadIndex += 1;
+      clearTurnSheets();
+      animating = false;
+      renderSpread(spreadIndex);
+    }, 940);
   }
 
-  100% {
-    transform: rotateY(180deg);
-    filter: brightness(1);
-  }
-}
+  function prevSpread() {
+    if (animating || spreadIndex <= 0) return;
 
-.controls {
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
+    animating = true;
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
 
-.controls button {
-  appearance: none;
-  border: 0;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font: inherit;
-  font-weight: 750;
-  color: #fff;
-  background: linear-gradient(135deg, #18a99e, #0a726a);
-  cursor: pointer;
-  box-shadow: 0 7px 17px rgba(10, 114, 106, 0.16);
-}
+    const current = spreads[spreadIndex];
+    const prev = spreads[spreadIndex - 1];
 
-.controls button:disabled {
-  opacity: .34;
-  cursor: default;
-}
+    leftFront.innerHTML = templateHTML(current.left);
+    leftBack.innerHTML = templateHTML(prev.right);
 
-#spreadIndicator {
-  min-width: 66px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 750;
-}
+    leftPage.innerHTML = templateHTML(prev.left);
 
-@media (max-width: 700px) {
-  .app {
-    grid-template-rows: minmax(0, 1fr) 52px;
-    padding: 4px;
+    setTimeout(() => {
+      bookBase.src = prev.base;
+    }, 390);
+
+    leftSheet.classList.add("turn-prev");
+
+    setTimeout(() => {
+      spreadIndex -= 1;
+      clearTurnSheets();
+      animating = false;
+      renderSpread(spreadIndex);
+    }, 940);
   }
 
-  .book-shell {
-    width: min(98vw, calc((100dvh - 60px) * 1.5));
-    max-height: calc(100dvh - 60px);
-  }
+  prevBtn.addEventListener("click", prevSpread);
+  nextBtn.addEventListener("click", nextSpread);
 
-  .story-copy {
-    font-size: clamp(9px, 1.9vw, 13px);
-  }
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") nextSpread();
+    if (event.key === "ArrowLeft") prevSpread();
+  });
 
-  .story-title {
-    font-size: clamp(14px, 3.2vw, 20px);
-  }
+  const bookShell = document.getElementById("bookShell");
 
-  .image-caption {
-    font-size: clamp(9px, 1.75vw, 12px);
-  }
+  bookShell.addEventListener("pointerdown", (event) => {
+    pointerStartX = event.clientX;
+  });
 
-  .controls {
-    height: 52px;
-    gap: 8px;
-  }
+  bookShell.addEventListener("pointerup", (event) => {
+    if (pointerStartX === null) return;
 
-  .controls button {
-    padding: 9px 13px;
-    font-size: 13px;
-  }
-}
+    const delta = event.clientX - pointerStartX;
+    pointerStartX = null;
+
+    if (Math.abs(delta) < 55) return;
+
+    if (delta < 0) {
+      nextSpread();
+    } else {
+      prevSpread();
+    }
+  });
+
+  renderSpread(0);
+});
