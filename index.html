@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="uk">
 <head>
 <meta charset="utf-8">
@@ -7,19 +7,16 @@
 
 <style>
 :root{
-  --ink:#1d332e;
-  --muted:#62736f;
-  --accent:#0d756d;
-  --paper:rgba(255,255,255,.985);
-  --shadow:rgba(18,42,48,.20);
+  --ink:#1d342f;
+  --muted:#667773;
+  --accent:#0c766e;
+  --paper:#ffffff;
+  --bg:#edf6f7;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
-html,
-body{
+html,body{
   width:100%;
   height:100%;
   margin:0;
@@ -29,367 +26,198 @@ body{
 body{
   font-family:"Segoe UI",Arial,sans-serif;
   color:var(--ink);
-  background:#eef7f8;
+  background:var(--bg);
 }
 
-button{
-  font:inherit;
-}
-
-.app{
+.reader{
   width:100%;
   height:100dvh;
   display:grid;
-  grid-template-rows:minmax(0,1fr) 56px;
+  grid-template-rows:minmax(0,1fr) 42px;
   place-items:center;
-  padding:6px 10px 4px;
+  padding:6px 8px 2px;
 }
 
-/* КНИЖКОВА ОСНОВА */
-
-.book{
-  position:relative;
-
-  width:min(
-    96vw,
-    calc((100dvh - 70px) * 1.5)
-  );
-
-  max-width:1500px;
-  max-height:calc(100dvh - 70px);
-
-  aspect-ratio:3 / 2;
-
-  perspective:2400px;
-  isolation:isolate;
-}
-
-.book-base{
-  position:absolute;
-  inset:0;
-
+.stage{
   width:100%;
   height:100%;
-
-  object-fit:fill;
-
-  pointer-events:none;
-  user-select:none;
-
-  filter:
-    drop-shadow(
-      0 16px 28px var(--shadow)
-    );
-
-  z-index:1;
-}
-
-/* РЕАЛЬНІ ЗОНИ ЛІВОЇ ТА ПРАВОЇ СТОРІНКИ */
-
-.page-zone{
-  position:absolute;
-
-  top:5.1%;
-  height:89.2%;
-
+  min-height:0;
+  display:grid;
+  place-items:center;
   overflow:hidden;
-
-  z-index:4;
 }
 
-.page-left{
-  left:5.1%;
-  width:42.7%;
+#book{
+  width:min(96vw, calc((100dvh - 54px) * 1.42));
+  height:min(calc(100dvh - 54px), 860px);
+  max-width:1450px;
+  max-height:860px;
 }
 
-.page-right{
-  left:52.2%;
-  width:42.7%;
-}
-
-.page{
-  width:100%;
-  height:100%;
-
+.book-page{
   position:relative;
-
   overflow:hidden;
-
-  background:transparent;
+  background-color:#fff;
 }
 
-/* ТЕКСТ + ІЛЮСТРАЦІЯ */
+/* Передня і задня обкладинки — дві половини нашої готової обкладинки */
+.cover-front,
+.cover-back{
+  background-image:url("assets/images/04_cover_complete.png");
+  background-repeat:no-repeat;
+  background-size:200% 100%;
+}
 
-.page.pad{
-  padding:5.4% 6.8% 5.2%;
+.cover-front{ background-position:right center; }
+.cover-back{ background-position:left center; }
 
+/* Початковий розворот */
+.start-left,
+.start-right{
+  background-image:url("assets/images/00_book_start.png");
+  background-repeat:no-repeat;
+  background-size:200% 100%;
+}
+
+.start-left{ background-position:left center; }
+.start-right{ background-position:right center; }
+
+/* Усі наступні внутрішні сторінки */
+.paper-left,
+.paper-right{
+  background-image:url("assets/images/01_book_spread.png");
+  background-repeat:no-repeat;
+  background-size:200% 100%;
+}
+
+.paper-left{ background-position:left center; }
+.paper-right{ background-position:right center; }
+
+.page-inner{
+  position:absolute;
+  inset:4.8% 6.6% 5.2%;
   display:flex;
   flex-direction:column;
+  overflow:hidden;
 }
 
-.title{
-  margin:0 0 3.7%;
+.start-right .page-inner,
+.paper-right .page-inner{
+  inset-left:7%;
+}
 
+.story-title{
+  margin:0 0 3.5%;
   color:var(--accent);
-
-  font-size:
-    clamp(23px,2vw,35px);
-
+  font-size:clamp(24px,2vw,36px);
   line-height:1.05;
-
   font-weight:850;
 }
 
-.text{
-  font-size:
-    clamp(15px,1.2vw,20px);
-
-  line-height:1.53;
-
+.story{
+  font-size:clamp(15px,1.12vw,20px);
+  line-height:1.48;
   letter-spacing:.002em;
 }
 
-.text p{
-  margin:0 0 .86em;
-}
-
-.text p:last-child{
-  margin-bottom:0;
-}
-
-.dialogue{
-  font-weight:620;
-  color:#2d4b45;
-}
-
-.inset{
-  margin:auto 0 0;
-
-  width:100%;
-  height:40%;
-
-  overflow:hidden;
-
-  border-radius:10px;
-
-  box-shadow:
-    0 8px 18px
-    rgba(22,48,45,.10);
-}
-
-.inset.tall{
-  height:47%;
-}
-
-.inset.short{
-  height:34%;
-}
-
-.inset img,
-.full img{
-  width:100%;
-  height:100%;
-
-  display:block;
-
-  object-fit:cover;
-}
-
-.inset img{
-  object-position:center 38%;
-}
-
-/* ВЕЛИКА ІЛЮСТРАЦІЯ */
-
-.full{
-  width:100%;
-  height:100%;
-
-  margin:0;
-
-  overflow:hidden;
-
-  position:relative;
-}
-
-.full img{
-  object-position:center;
-}
-
-.full .caption{
-  position:absolute;
-
-  left:6%;
-  right:6%;
-  bottom:5.5%;
-
-  padding:10px 14px;
-
-  border-radius:12px;
-
-  background:
-    rgba(255,255,255,.88);
-
-  backdrop-filter:blur(3px);
-
-  font-size:
-    clamp(13px,1vw,17px);
-
-  line-height:1.38;
-
-  box-shadow:
-    0 5px 15px
-    rgba(0,0,0,.08);
-}
-
-/* ТЕКСТ + КАДР У МЕЖАХ ОДНІЄЇ СТОРІНКИ */
-
-.split{
-  height:100%;
-
-  padding:4.9% 6.5%;
-
-  display:grid;
-
-  grid-template-rows:
-    1fr 43%;
-
-  gap:4%;
-}
-
-.split.reverse{
-  grid-template-rows:
-    45% 1fr;
-}
-
-.split .imagebox{
-  overflow:hidden;
-
-  border-radius:10px;
-
-  box-shadow:
-    0 8px 18px
-    rgba(22,48,45,.10);
-}
-
-.split .imagebox img{
-  width:100%;
-  height:100%;
-
-  object-fit:cover;
-
-  display:block;
-}
-
-.split .copy{
-  font-size:
-    clamp(15px,1.17vw,19.5px);
-
-  line-height:1.52;
-
-  overflow:hidden;
-}
-
-.split .copy p{
+.story p{
   margin:0 0 .82em;
 }
 
-.split .copy p:last-child{
-  margin-bottom:0;
+.story p:last-child{margin-bottom:0}
+
+.dialogue{
+  font-weight:620;
+  color:#294a44;
 }
 
-/* НОМЕРИ СТОРІНОК */
-
-.page-num{
-  position:absolute;
-
-  bottom:2.1%;
-
-  font-size:
-    clamp(10px,.72vw,12px);
-
-  color:#84928f;
-}
-
-.page-left .page-num{
-  left:7%;
-}
-
-.page-right .page-num{
-  right:7%;
-}
-
-/* ПИТАННЯ ВІД ГЕРОЇВ */
-
-.questions{
-  height:100%;
-
-  padding:5.3% 6.8%;
-
-  display:flex;
-  flex-direction:column;
-}
-
-.questions-hero{
+.art{
+  margin:auto 0 0;
   width:100%;
-  height:33%;
-
-  margin:0 0 3.5%;
-
   overflow:hidden;
-
   border-radius:10px;
-
-  box-shadow:
-    0 7px 16px
-    rgba(22,48,45,.10);
+  box-shadow:0 7px 18px rgba(25,52,48,.10);
+  background:#eef4f3;
 }
 
-.questions-hero img{
+.art.h34{height:34%}
+.art.h38{height:38%}
+.art.h42{height:42%}
+.art.h45{height:45%}
+
+.art img{
   width:100%;
   height:100%;
-
+  display:block;
   object-fit:cover;
   object-position:center 38%;
+}
 
+.full-art{
+  position:absolute;
+  inset:4.8% 6.4% 5.2%;
+  overflow:hidden;
+  border-radius:10px;
+  box-shadow:0 8px 20px rgba(25,52,48,.10);
+}
+
+.full-art img{
+  width:100%;
+  height:100%;
   display:block;
+  object-fit:cover;
+}
+
+.full-art .caption{
+  position:absolute;
+  left:5%;
+  right:5%;
+  bottom:4.5%;
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(3px);
+  font-size:clamp(13px,.95vw,17px);
+  line-height:1.38;
 }
 
 .questions h2{
-  margin:0 0 3%;
-
+  margin:0 0 2.7%;
   color:var(--accent);
-
-  font-size:
-    clamp(21px,1.75vw,31px);
-
+  font-size:clamp(21px,1.7vw,31px);
   line-height:1.08;
 }
 
+.questions .hero{
+  height:29%;
+  margin:0 0 3.2%;
+  overflow:hidden;
+  border-radius:10px;
+  box-shadow:0 7px 16px rgba(25,52,48,.10);
+}
+
+.questions .hero img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 38%;
+  display:block;
+}
+
 .questions .intro{
-  margin:0 0 4%;
-
+  margin:0 0 3.4%;
   color:var(--muted);
-
-  font-size:
-    clamp(14px,1vw,17px);
-
-  line-height:1.42;
+  font-size:clamp(13px,.95vw,16px);
+  line-height:1.4;
 }
 
 .questions ol{
   margin:0;
-
-  padding-left:1.3em;
-
+  padding-left:1.25em;
   display:grid;
-
-  gap:.55em;
-
-  font-size:
-    clamp(13px,.98vw,16.5px);
-
-  line-height:1.38;
+  gap:.48em;
+  font-size:clamp(12px,.9vw,15.5px);
+  line-height:1.34;
 }
 
 .questions li::marker{
@@ -397,1220 +225,336 @@ button{
   font-weight:800;
 }
 
-/* АРКУШ, ЯКИЙ ГОРТАЄТЬСЯ */
-
-.flip-sheet{
+.page-num{
   position:absolute;
-
-  top:5.1%;
-
-  height:89.2%;
-  width:42.7%;
-
-  opacity:0;
-
-  pointer-events:none;
-
-  transform-style:preserve-3d;
-
-  z-index:30;
+  bottom:2.0%;
+  font-size:clamp(9px,.65vw,11px);
+  color:#889691;
 }
 
-.flip-sheet.next{
-  left:52.2%;
-  transform-origin:left center;
-}
+.left-num{left:7%}
+.right-num{right:7%}
 
-.flip-sheet.prev{
-  left:5.1%;
-  transform-origin:right center;
-}
-
-.face{
-  position:absolute;
-  inset:0;
-
-  overflow:hidden;
-
-  backface-visibility:hidden;
-
-  background:
-    rgba(255,255,255,.965);
-
-  box-shadow:
-    0 6px 22px
-      rgba(20,42,48,.16),
-    inset 0 0 24px
-      rgba(20,42,48,.035);
-}
-
-.face.back{
-  transform:rotateY(180deg);
-}
-
-.flip-sheet.turn-next{
-  opacity:1;
-
-  animation:
-    turnNext
-    980ms
-    cubic-bezier(.28,.06,.18,.99)
-    forwards;
-}
-
-.flip-sheet.turn-prev{
-  opacity:1;
-
-  animation:
-    turnPrev
-    980ms
-    cubic-bezier(.28,.06,.18,.99)
-    forwards;
-}
-
-@keyframes turnNext{
-
-  0%{
-    transform:rotateY(0deg);
-    filter:brightness(1);
-  }
-
-  47%{
-    filter:brightness(.88);
-  }
-
-  100%{
-    transform:rotateY(-180deg);
-    filter:brightness(1);
-  }
-}
-
-@keyframes turnPrev{
-
-  0%{
-    transform:rotateY(0deg);
-    filter:brightness(1);
-  }
-
-  47%{
-    filter:brightness(.88);
-  }
-
-  100%{
-    transform:rotateY(180deg);
-    filter:brightness(1);
-  }
-}
-
-/* КЕРУВАННЯ */
-
-.controls{
-  height:56px;
-
+.hint{
+  height:42px;
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   gap:14px;
+  color:#60716d;
+  font-size:13px;
+  user-select:none;
 }
 
-.controls button{
-  border:0;
-
-  border-radius:999px;
-
-  padding:10px 17px;
-
-  color:#fff;
-
-  background:
-    linear-gradient(
-      135deg,
-      #19a89d,
-      #0a7169
-    );
-
-  font-weight:750;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 7px 17px
-    rgba(10,110,102,.16);
+.hint strong{
+  color:var(--accent);
 }
-
-.controls button:disabled{
-  opacity:.32;
-  cursor:default;
-}
-
-.counter{
-  min-width:72px;
-
-  text-align:center;
-
-  color:var(--muted);
-
-  font-size:14px;
-  font-weight:750;
-}
-
-/* МОБІЛЬНИЙ ЕКРАН */
 
 @media(max-width:760px){
-
-  .app{
-    grid-template-rows:
-      minmax(0,1fr)
-      50px;
-
-    padding:4px;
+  .reader{
+    grid-template-rows:minmax(0,1fr) 36px;
+    padding:4px 3px 1px;
   }
 
-  .book{
-    width:min(
-      98vw,
-      calc((100dvh - 58px) * 1.5)
-    );
-
-    max-height:
-      calc(100dvh - 58px);
+  #book{
+    width:min(98vw, calc((100dvh - 43px) * 1.42));
+    height:min(calc(100dvh - 43px), 820px);
   }
 
-  .text,
-  .split .copy{
-    font-size:
-      clamp(9px,1.85vw,13px);
-
-    line-height:1.43;
+  .story{
+    font-size:clamp(9px,1.9vw,13px);
+    line-height:1.42;
   }
 
-  .title{
-    font-size:
-      clamp(14px,3vw,20px);
+  .story-title{
+    font-size:clamp(14px,3vw,20px);
   }
 
   .questions ol{
-    font-size:
-      clamp(8px,1.65vw,12px);
+    font-size:clamp(8px,1.65vw,11.5px);
   }
 
   .questions .intro{
-    font-size:
-      clamp(8px,1.7vw,12px);
+    font-size:clamp(8px,1.7vw,12px);
   }
 
   .questions h2{
-    font-size:
-      clamp(13px,2.8vw,19px);
+    font-size:clamp(13px,2.7vw,19px);
   }
 
-  .controls{
-    height:50px;
-    gap:8px;
-  }
-
-  .controls button{
-    padding:8px 12px;
-    font-size:13px;
-  }
-
-  .counter{
-    min-width:58px;
-    font-size:12px;
+  .hint{
+    height:36px;
+    font-size:11px;
   }
 }
-
 </style>
 </head>
 
 <body>
+<main class="reader">
+  <section class="stage">
+    <div id="book">
 
-<div class="app">
+      <!-- 0: ПЕРЕДНЯ ОБКЛАДИНКА -->
+      <div class="book-page cover-front" data-density="hard"></div>
 
-  <section
-    class="book"
-    id="book"
-  >
+      <!-- 1: ВНУТРІШНЯ СТОРОНА ОБКЛАДИНКИ / ФОРЗАЦ -->
+      <div class="book-page start-left"></div>
 
-    <img
-      id="bookBase"
-      class="book-base"
-      src="assets/images/00_book_start.png"
-      alt=""
-    >
+      <!-- 2: ПЕРША СТОРІНКА -->
+      <div class="book-page start-right">
+        <div class="page-inner">
+          <h1 class="story-title">Таємниця старої мапи</h1>
 
-    <div
-      id="leftPage"
-      class="page-zone page-left"
-    ></div>
+          <div class="story">
+            <p>Одного сонячного дня Сашко й Дмитро гуляли біля річки. Під корінням старої верби Сашко помітив пожовклий згорток.</p>
+            <p>Хлопці обережно розгорнули його — це була стара мапа. На ній виднілися річка та стежка, що вела до невідомого яру.</p>
+            <p class="dialogue">— Перевіримо, куди вона веде? — запропонував Дмитро.</p>
+          </div>
 
-    <div
-      id="rightPage"
-      class="page-zone page-right"
-    ></div>
+          <figure class="art h42">
+            <img src="05_scene_01_map_found.png" alt="Хлопці знайшли стару мапу">
+          </figure>
 
-    <div
-      id="flipNext"
-      class="flip-sheet next"
-    >
-      <div
-        id="nextFront"
-        class="face front"
-      ></div>
+          <span class="page-num right-num">1</span>
+        </div>
+      </div>
 
-      <div
-        id="nextBack"
-        class="face back"
-      ></div>
+      <!-- 3 -->
+      <div class="book-page paper-left">
+        <div class="page-inner">
+          <div class="story">
+            <p>Біля берега стояв дерев’яний човен. Друзі сіли в нього й попливли за маршрутом, позначеним на мапі.</p>
+            <p>Спочатку річка була широкою і спокійною. Та невдовзі береги стали вищими, дерева схилилися над водою, а попереду між скелями відкрився вузький прохід.</p>
+            <p>Один із хлопців веслував, другий стежив за напрямком. Човен усе далі віддалявся від знайомого берега.</p>
+          </div>
+
+          <figure class="art h38">
+            <img src="06_scene_02_boat_route.png" alt="Подорож човном">
+          </figure>
+
+          <span class="page-num left-num">2</span>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="book-page paper-right">
+        <div class="page-inner">
+          <div class="story">
+            <p>Незабаром хлопці пристали до берега, витягли човен на сушу й рушили стежкою крізь густі хащі.</p>
+            <p>Коріння дерев перепліталося з камінням. Було тихо, лише десь унизу ще чулося дзюрчання води.</p>
+            <p>Стежка підіймалася вгору. За заростями раптом з’явився величезний дуб.</p>
+          </div>
+
+          <figure class="art h45">
+            <img src="08_scene_04_old_oak.png" alt="Старий дуб">
+          </figure>
+
+          <span class="page-num right-num">3</span>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="book-page paper-left">
+        <div class="page-inner">
+          <div class="story">
+            <p>Та радість від знахідки швидко змінилася тривогою. Частина гілок була сухою, листя стало рідким, а кора подекуди потріскалася.</p>
+            <p class="dialogue">— Мабуть, йому бракує води, — задумався Сашко.</p>
+            <p>Дмитро згадав мапу. Неподалік від дуба на ній була позначка джерела. Друзі почали спускатися між камінням і корінням.</p>
+          </div>
+
+          <figure class="art h38">
+            <img src="09_scene_05_oak_problem.png" alt="Хлопці оглядають дуб">
+          </figure>
+
+          <span class="page-num left-num">4</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="book-page paper-right">
+        <div class="page-inner">
+          <div class="story">
+            <p>Незабаром вони почули тихе дзюрчання. Між мохом і камінцями пробивалася вода.</p>
+            <p>Та джерело було дуже слабким. Хлопці уважніше оглянули місце й побачили, що русло завалене сухими гілками, листям і сміттям.</p>
+            <p>Тепер усе стало зрозуміло: вода майже не могла живити землю біля коріння старого дуба.</p>
+          </div>
+
+          <figure class="art h42">
+            <img src="11_scene_07_spring_blocked.png" alt="Засмічене джерело">
+          </figure>
+
+          <span class="page-num right-num">5</span>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="book-page paper-left">
+        <div class="page-inner">
+          <div class="story">
+            <p>Сашко й Дмитро взялися до роботи. Вони відтягували гілки, прибирали мокре листя й розчищали русло між камінням.</p>
+            <p>Робота була нелегкою, але хлопці допомагали один одному. Коли останню перепону прибрали, джерело задзюркотіло зовсім інакше.</p>
+            <p>Чиста вода побігла між камінням і попрямувала до коріння старого дуба.</p>
+          </div>
+
+          <figure class="art h42">
+            <img src="12_scene_08_spring_cleaning.png" alt="Хлопці очищають джерело">
+          </figure>
+
+          <span class="page-num left-num">6</span>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="book-page paper-right">
+        <div class="page-inner">
+          <div class="story">
+            <p>Минув час. Вода продовжувала напувати землю, і старий дуб почав змінюватися.</p>
+            <p>На його гілках з’явилося свіже листя. До дерева повернулися птахи, а в одному з дупел оселилася білка.</p>
+            <p>Давній дуб знову став домівкою для мешканців лісу.</p>
+          </div>
+
+          <figure class="art h45">
+            <img src="14_scene_10_oak_recovery.png" alt="Дуб оживає">
+          </figure>
+
+          <span class="page-num right-num">7</span>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="book-page paper-left">
+        <div class="page-inner">
+          <div class="story">
+            <p>Сашко й Дмитро ще раз прийшли до дуба. Поруч дзюрчала вода, а в кроні співали птахи.</p>
+            <p>Сашко тримав у руці згорнуту мапу.</p>
+            <p class="dialogue">— А ми думали, що вона приведе нас до скарбу.</p>
+            <p class="dialogue">Дмитро усміхнувся: — Схоже, так і сталося.</p>
+            <p>Іноді справжній скарб — це не золото й не коштовності. Це те, що вдалося побачити, зрозуміти й урятувати власними руками.</p>
+          </div>
+
+          <figure class="art h34">
+            <img src="15_scene_11_true_treasure.png" alt="Хлопці біля ожилого дуба">
+          </figure>
+
+          <span class="page-num left-num">8</span>
+        </div>
+      </div>
+
+      <!-- 10: художня пауза -->
+      <div class="book-page paper-right">
+        <figure class="full-art">
+          <img src="16_book_end.png" alt="Оживлий дуб і чисте джерело">
+          <figcaption class="caption">
+            Вода знову текла вільно, а старий дуб шумів листям над яром.
+          </figcaption>
+        </figure>
+
+        <span class="page-num right-num">9</span>
+      </div>
+
+      <!-- 11: питання -->
+      <div class="book-page paper-left">
+        <div class="page-inner questions">
+          <figure class="hero">
+            <img src="17_questions_from_heroes.png" alt="Сашко й Дмитро повернулися до річки">
+          </figure>
+
+          <h2>Питання від головних героїв</h2>
+          <p class="intro">Ми повернулися з пригоди. А тепер поміркуй разом із нами.</p>
+
+          <ol>
+            <li>Де Сашко й Дмитро знайшли стару мапу?</li>
+            <li>Куди привів їх маршрут?</li>
+            <li>Чому старий дуб почав всихати?</li>
+            <li>Що заважало джерелу живити дерево?</li>
+            <li>Що зробили хлопці, щоб допомогти дубу?</li>
+            <li>Чому добра справа виявилася справжнім скарбом?</li>
+          </ol>
+
+          <span class="page-num left-num">10</span>
+        </div>
+      </div>
+
+      <!-- 12: фінальна права сторінка -->
+      <div class="book-page paper-right">
+        <div class="page-inner">
+          <div class="story">
+            <p>Пригода завершилася там, де колись почалася: біля річки, старого дерева й човна.</p>
+            <p>Та тепер Сашко й Дмитро поверталися додому з історією, яку точно не забудуть.</p>
+          </div>
+
+          <figure class="art h45">
+            <img src="17_questions_from_heroes.png" alt="Хлопці повернулися до човна">
+          </figure>
+
+          <span class="page-num right-num">11</span>
+        </div>
+      </div>
+
+      <!-- 13: ЗАДНЯ ОБКЛАДИНКА -->
+      <div class="book-page cover-back" data-density="hard"></div>
+
     </div>
-
-    <div
-      id="flipPrev"
-      class="flip-sheet prev"
-    >
-      <div
-        id="prevFront"
-        class="face front"
-      ></div>
-
-      <div
-        id="prevBack"
-        class="face back"
-      ></div>
-    </div>
-
   </section>
 
-  <nav class="controls">
+  <div class="hint">
+    <span><strong>Гортай за кутик сторінки</strong> — мишею або дотиком</span>
+  </div>
+</main>
 
-    <button
-      id="prevBtn"
-      type="button"
-    >
-      ← Назад
-    </button>
-
-    <span
-      id="counter"
-      class="counter"
-    >
-      1 / 7
-    </span>
-
-    <button
-      id="nextBtn"
-      type="button"
-    >
-      Далі →
-    </button>
-
-  </nav>
-
-</div>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const bookEl = document.getElementById("book");
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+  const pageFlip = new St.PageFlip(bookEl, {
+    width: 560,
+    height: 800,
 
-    const BASE_START =
-      "assets/images/00_book_start.png";
+    size: "stretch",
+    minWidth: 280,
+    maxWidth: 560,
+    minHeight: 400,
+    maxHeight: 800,
 
-    const BASE_SPREAD =
-      "assets/images/01_book_spread.png";
+    drawShadow: true,
+    maxShadowOpacity: 0.24,
 
+    flippingTime: 1450,
 
-    const img = (
-      src,
-      alt = ""
-    ) =>
-      `<img
-        src="${src}"
-        alt="${alt}"
-        onerror="this.style.display='none'"
-      >`;
+    usePortrait: true,
+    autoSize: false,
 
+    showCover: true,
 
-    const num = n =>
-      `<span class="page-num">
-        ${n}
-      </span>`;
+    mobileScrollSupport: false,
+    swipeDistance: 35,
 
+    clickEventForward: true,
+    useMouseEvents: true,
 
-    const pages = {
+    /* Ключове: кліком гортаємо ТІЛЬКИ в кутиках */
+    disableFlipByClick: true,
 
-      p1: `
-      <article class="page pad">
+    startPage: 0
+  });
 
-        <h1 class="title">
-          Таємниця старої мапи
-        </h1>
+  pageFlip.loadFromHTML(
+    document.querySelectorAll(".book-page")
+  );
 
-        <div class="text">
-
-          <p>
-            Одного сонячного дня
-            Сашко й Дмитро гуляли
-            біля річки.
-            Під корінням старої верби
-            Сашко помітив пожовклий згорток.
-          </p>
-
-          <p>
-            Хлопці обережно розгорнули його —
-            це була стара мапа.
-            На ній виднілися річка
-            та стежка,
-            що вела до невідомого яру.
-          </p>
-
-          <p class="dialogue">
-            — Перевіримо,
-            куди вона веде? —
-            запропонував Дмитро.
-          </p>
-
-        </div>
-
-        <figure class="inset tall">
-
-          ${img(
-            "05_scene_01_map_found.png",
-            "Хлопці знайшли стару мапу"
-          )}
-
-        </figure>
-
-        ${num(1)}
-
-      </article>
-      `,
-
-
-      p2: `
-      <article class="page pad">
-
-        <div class="text">
-
-          <p>
-            Біля берега стояв дерев’яний човен.
-            Друзі сіли в нього
-            й попливли за маршрутом,
-            позначеним на мапі.
-          </p>
-
-          <p>
-            Спочатку річка була
-            широкою і спокійною.
-            Та невдовзі береги стали вищими,
-            дерева схилилися над водою,
-            а попереду відкрився
-            вузький прохід.
-          </p>
-
-          <p>
-            Один із хлопців веслував,
-            другий стежив за напрямком.
-            Стара мапа лежала поруч,
-            а човен усе далі віддалявся
-            від знайомого берега.
-          </p>
-
-        </div>
-
-        <figure class="inset">
-
-          ${img(
-            "06_scene_02_boat_route.png",
-            "Подорож човном"
-          )}
-
-        </figure>
-
-        ${num(2)}
-
-      </article>
-      `,
-
-
-      p3: `
-      <article class="page full">
-
-        ${img(
-          "06_scene_02_boat_route.png",
-          "Хлопці пливуть річкою"
-        )}
-
-        <div class="caption">
-          Річка вела їх туди,
-          де починалася зовсім
-          інша частина пригоди.
-        </div>
-
-        ${num(3)}
-
-      </article>
-      `,
-
-
-      p4: `
-      <article class="page split">
-
-        <div class="copy">
-
-          <p>
-            Незабаром хлопці пристали
-            до берега,
-            витягли човен на сушу
-            й рушили стежкою
-            крізь густі хащі.
-          </p>
-
-          <p>
-            Коріння дерев перепліталося
-            з камінням.
-            Було тихо,
-            лише десь унизу ще чулося
-            дзюрчання води.
-          </p>
-
-          <p>
-            Стежка підіймалася вгору.
-            За заростями раптом
-            з’явився величезний дуб.
-          </p>
-
-        </div>
-
-        <div class="imagebox">
-
-          ${img(
-            "07_scene_03_ravine_arrival.png",
-            "Прибуття до яру"
-          )}
-
-        </div>
-
-        ${num(4)}
-
-      </article>
-      `,
-
-
-      p5: `
-      <article class="page full">
-
-        ${img(
-          "08_scene_04_old_oak.png",
-          "Старий дуб"
-        )}
-
-        <div class="caption">
-          Дуб ріс тут,
-          мабуть,
-          не одну сотню років.
-        </div>
-
-        ${num(5)}
-
-      </article>
-      `,
-
-
-      p6: `
-      <article class="page split reverse">
-
-        <div class="imagebox">
-
-          ${img(
-            "09_scene_05_oak_problem.png",
-            "Хлопці оглядають дуб"
-          )}
-
-        </div>
-
-        <div class="copy">
-
-          <p>
-            Та радість від знахідки
-            швидко змінилася тривогою.
-            Частина гілок була сухою,
-            листя стало рідким,
-            а кора подекуди потріскалася.
-          </p>
-
-          <p class="dialogue">
-            — Мабуть,
-            йому бракує води, —
-            задумався Сашко.
-          </p>
-
-          <p>
-            Дмитро згадав мапу.
-            Неподалік від дуба
-            на ній була позначка джерела.
-          </p>
-
-        </div>
-
-        ${num(6)}
-
-      </article>
-      `,
-
-
-      p7: `
-      <article class="page pad">
-
-        <div class="text">
-
-          <p>
-            Друзі почали спускатися
-            між камінням і корінням.
-            Незабаром вони почули
-            тихе дзюрчання.
-            Між мохом і камінцями
-            пробивалася вода.
-          </p>
-
-          <p class="dialogue">
-            — Ось воно! —
-            зрадів Дмитро.
-          </p>
-
-          <p>
-            Та джерело було дуже слабким.
-            Хлопці уважніше оглянули місце
-            й побачили,
-            що русло завалене
-            сухими гілками,
-            листям і сміттям.
-          </p>
-
-        </div>
-
-        <figure class="inset tall">
-
-          ${img(
-            "11_scene_07_spring_blocked.png",
-            "Засмічене джерело"
-          )}
-
-        </figure>
-
-        ${num(7)}
-
-      </article>
-      `,
-
-
-      p8: `
-      <article class="page full">
-
-        ${img(
-          "12_scene_08_spring_cleaning.png",
-          "Хлопці очищають джерело"
-        )}
-
-        <div class="caption">
-          Сашко й Дмитро взялися до роботи.
-          Вони відтягували гілки,
-          прибирали мокре листя
-          й розчищали русло між камінням.
-        </div>
-
-        ${num(8)}
-
-      </article>
-      `,
-
-
-      p9: `
-      <article class="page pad">
-
-        <div class="text">
-
-          <p>
-            Робота була нелегкою,
-            але хлопці не поспішали
-            й допомагали один одному.
-          </p>
-
-          <p>
-            Коли останню перепону прибрали,
-            джерело задзюркотіло
-            зовсім інакше.
-            Чиста вода побігла
-            між камінням
-            і попрямувала
-            до коріння старого дуба.
-          </p>
-
-          <p>
-            Хлопці присіли біля струмка
-            й мовчки дивилися
-            на результат своєї роботи.
-            Тепер залишалося лише чекати.
-          </p>
-
-        </div>
-
-        <figure class="inset tall">
-
-          ${img(
-            "13_scene_09_water_flows.png",
-            "Вода знову тече"
-          )}
-
-        </figure>
-
-        ${num(9)}
-
-      </article>
-      `,
-
-
-      p10: `
-      <article class="page split reverse">
-
-        <div class="imagebox">
-
-          ${img(
-            "14_scene_10_oak_recovery.png",
-            "Дуб оживає"
-          )}
-
-        </div>
-
-        <div class="copy">
-
-          <p>
-            Минув час.
-            Вода продовжувала напувати землю,
-            і старий дуб почав змінюватися.
-          </p>
-
-          <p>
-            На його гілках
-            з’явилося свіже листя.
-            До дерева повернулися птахи,
-            а в одному з дупел
-            оселилася білка.
-          </p>
-
-          <p>
-            Давній дуб знову став
-            домівкою для мешканців лісу.
-          </p>
-
-        </div>
-
-        ${num(10)}
-
-      </article>
-      `,
-
-
-      p11: `
-      <article class="page full">
-
-        ${img(
-          "15_scene_11_true_treasure.png",
-          "Хлопці біля ожилого дуба"
-        )}
-
-        <div class="caption">
-          Сашко й Дмитро
-          ще раз прийшли до дуба.
-          Поруч дзюрчала вода,
-          а в кроні співали птахи.
-        </div>
-
-        ${num(11)}
-
-      </article>
-      `,
-
-
-      p12: `
-      <article class="page pad">
-
-        <div class="text">
-
-          <p>
-            Сашко тримав у руці
-            згорнуту мапу.
-          </p>
-
-          <p class="dialogue">
-            — А ми думали,
-            що вона приведе нас до скарбу.
-          </p>
-
-          <p class="dialogue">
-            Дмитро усміхнувся:
-            <br>
-            — Схоже,
-            так і сталося.
-          </p>
-
-          <p>
-            Іноді справжній скарб —
-            це не золото й не коштовності.
-            Це те,
-            що вдалося побачити,
-            зрозуміти
-            й урятувати власними руками.
-          </p>
-
-        </div>
-
-        <figure class="inset tall">
-
-          ${img(
-            "16_book_end.png",
-            "Оживлий дуб і чисте джерело"
-          )}
-
-        </figure>
-
-        ${num(12)}
-
-      </article>
-      `,
-
-
-      p14: `
-      <article class="page questions">
-
-        <figure class="questions-hero">
-
-          ${img(
-            "17_questions_from_heroes.png",
-            "Сашко й Дмитро повернулися до річки"
-          )}
-
-        </figure>
-
-        <h2>
-          Питання від головних героїв
-        </h2>
-
-        <p class="intro">
-          Ми повернулися з пригоди.
-          А тепер поміркуй разом із нами.
-        </p>
-
-        <ol>
-
-          <li>
-            Де Сашко й Дмитро
-            знайшли стару мапу?
-          </li>
-
-          <li>
-            Куди привів їх маршрут?
-          </li>
-
-          <li>
-            Чому старий дуб
-            почав всихати?
-          </li>
-
-          <li>
-            Що заважало джерелу
-            живити дерево?
-          </li>
-
-          <li>
-            Що зробили хлопці,
-            щоб допомогти дубу?
-          </li>
-
-          <li>
-            Чому добра справа
-            виявилася справжнім скарбом?
-          </li>
-
-        </ol>
-
-        ${num(13)}
-
-      </article>
-      `
-    };
-
-
-    const spreads = [
-
-      {
-        left:null,
-        right:"p1",
-        base:BASE_START
-      },
-
-      {
-        left:"p2",
-        right:"p3",
-        base:BASE_SPREAD
-      },
-
-      {
-        left:"p4",
-        right:"p5",
-        base:BASE_SPREAD
-      },
-
-      {
-        left:"p6",
-        right:"p7",
-        base:BASE_SPREAD
-      },
-
-      {
-        left:"p8",
-        right:"p9",
-        base:BASE_SPREAD
-      },
-
-      {
-        left:"p10",
-        right:"p11",
-        base:BASE_SPREAD
-      },
-
-      {
-        left:"p12",
-        right:"p14",
-        base:BASE_SPREAD
-      }
-
-    ];
-
-
-    const bookBase =
-      document.getElementById("bookBase");
-
-    const leftPage =
-      document.getElementById("leftPage");
-
-    const rightPage =
-      document.getElementById("rightPage");
-
-    const prevBtn =
-      document.getElementById("prevBtn");
-
-    const nextBtn =
-      document.getElementById("nextBtn");
-
-    const counter =
-      document.getElementById("counter");
-
-    const flipNext =
-      document.getElementById("flipNext");
-
-    const nextFront =
-      document.getElementById("nextFront");
-
-    const nextBack =
-      document.getElementById("nextBack");
-
-    const flipPrev =
-      document.getElementById("flipPrev");
-
-    const prevFront =
-      document.getElementById("prevFront");
-
-    const prevBack =
-      document.getElementById("prevBack");
-
-
-    let current = 0;
-    let busy = false;
-    let pointerX = null;
-
-
-    function html(id){
-
-      return id
-        ? (pages[id] || "")
-        : "";
-
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") {
+      pageFlip.flipNext("bottom");
     }
 
-
-    function updateButtons(){
-
-      counter.textContent =
-        `${current + 1} / ${spreads.length}`;
-
-      prevBtn.disabled =
-        busy || current === 0;
-
-      nextBtn.disabled =
-        busy ||
-        current === spreads.length - 1;
-
+    if (event.key === "ArrowLeft") {
+      pageFlip.flipPrev("bottom");
     }
-
-
-    function render(){
-
-      const spread =
-        spreads[current];
-
-      bookBase.src =
-        spread.base;
-
-      leftPage.innerHTML =
-        html(spread.left);
-
-      rightPage.innerHTML =
-        html(spread.right);
-
-      updateButtons();
-
-    }
-
-
-    function resetFlip(){
-
-      flipNext.className =
-        "flip-sheet next";
-
-      flipPrev.className =
-        "flip-sheet prev";
-
-      nextFront.innerHTML = "";
-      nextBack.innerHTML = "";
-
-      prevFront.innerHTML = "";
-      prevBack.innerHTML = "";
-
-    }
-
-
-    function goNext(){
-
-      if(
-        busy ||
-        current >= spreads.length - 1
-      ){
-        return;
-      }
-
-      busy = true;
-
-      updateButtons();
-
-      const currentSpread =
-        spreads[current];
-
-      const nextSpread =
-        spreads[current + 1];
-
-      nextFront.innerHTML =
-        html(currentSpread.right);
-
-      nextBack.innerHTML =
-        html(nextSpread.left);
-
-      rightPage.innerHTML =
-        html(nextSpread.right);
-
-      requestAnimationFrame(
-        () => {
-
-          flipNext
-            .classList
-            .add("turn-next");
-
-        }
-      );
-
-      setTimeout(
-        () => {
-
-          bookBase.src =
-            nextSpread.base;
-
-        },
-        430
-      );
-
-      setTimeout(
-        () => {
-
-          current++;
-
-          resetFlip();
-
-          busy = false;
-
-          render();
-
-        },
-        1000
-      );
-
-    }
-
-
-    function goPrev(){
-
-      if(
-        busy ||
-        current <= 0
-      ){
-        return;
-      }
-
-      busy = true;
-
-      updateButtons();
-
-      const currentSpread =
-        spreads[current];
-
-      const previousSpread =
-        spreads[current - 1];
-
-      prevFront.innerHTML =
-        html(currentSpread.left);
-
-      prevBack.innerHTML =
-        html(previousSpread.right);
-
-      leftPage.innerHTML =
-        html(previousSpread.left);
-
-      requestAnimationFrame(
-        () => {
-
-          flipPrev
-            .classList
-            .add("turn-prev");
-
-        }
-      );
-
-      setTimeout(
-        () => {
-
-          bookBase.src =
-            previousSpread.base;
-
-        },
-        430
-      );
-
-      setTimeout(
-        () => {
-
-          current--;
-
-          resetFlip();
-
-          busy = false;
-
-          render();
-
-        },
-        1000
-      );
-
-    }
-
-
-    prevBtn.addEventListener(
-      "click",
-      goPrev
-    );
-
-    nextBtn.addEventListener(
-      "click",
-      goNext
-    );
-
-
-    window.addEventListener(
-      "keydown",
-      event => {
-
-        if(
-          event.key === "ArrowRight"
-        ){
-          goNext();
-        }
-
-        if(
-          event.key === "ArrowLeft"
-        ){
-          goPrev();
-        }
-
-      }
-    );
-
-
-    const book =
-      document.getElementById("book");
-
-
-    book.addEventListener(
-      "pointerdown",
-      event => {
-
-        pointerX =
-          event.clientX;
-
-      }
-    );
-
-
-    book.addEventListener(
-      "pointerup",
-      event => {
-
-        if(
-          pointerX === null
-        ){
-          return;
-        }
-
-        const delta =
-          event.clientX - pointerX;
-
-        pointerX = null;
-
-        if(
-          Math.abs(delta) < 60
-        ){
-          return;
-        }
-
-        if(delta < 0){
-
-          goNext();
-
-        }else{
-
-          goPrev();
-
-        }
-
-      }
-    );
-
-
-    render();
-
-  }
-);
-
+  });
+});
 </script>
 
 </body>
