@@ -1,1 +1,356 @@
-/* styles */
+:root {
+  --page-white: #ffffff;
+  --text: #17332d;
+  --muted: #667a74;
+  --green: #0f776d;
+  --green-dark: #095b54;
+  --coral: #e66d57;
+  --background: #eef7f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(50, 190, 178, 0.12), transparent 28rem),
+    radial-gradient(circle at 90% 85%, rgba(61, 142, 201, 0.10), transparent 30rem),
+    var(--background);
+}
+
+/* ===== ОСНОВА КНИГИ ===== */
+
+.book-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px 12px 30px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#book {
+  margin: 0 auto;
+
+  filter:
+    drop-shadow(0 18px 26px rgba(22, 50, 58, 0.16))
+    drop-shadow(0 3px 7px rgba(22, 50, 58, 0.10));
+}
+
+/* ===== СТОРІНКА ===== */
+
+.page {
+  background: var(--page-white);
+  overflow: hidden;
+}
+
+.page-content {
+  position: relative;
+
+  height: 100%;
+  padding: 9% 9% 10%;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.025) 0%,
+      transparent 7%,
+      transparent 93%,
+      rgba(0, 0, 0, 0.025) 100%
+    ),
+    #ffffff;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== ТЕКСТОВІ СТОРІНКИ ===== */
+
+.text-page h2,
+.questions-page h2 {
+  margin: 0 0 7%;
+
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  line-height: 1.15;
+  font-weight: 800;
+
+  color: var(--green);
+}
+
+.text-page p {
+  margin: 0 0 1.05em;
+
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.62;
+
+  color: var(--text);
+}
+
+.text-page p:last-child {
+  margin-bottom: 0;
+}
+
+.dialogue {
+  color: #34534c !important;
+  font-weight: 600;
+}
+
+/* ===== ІЛЮСТРАЦІЇ ===== */
+
+.image-page {
+  position: relative;
+  background: #f4f8f7;
+}
+
+.image-page img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ===== ОБКЛАДИНКА ===== */
+
+.cover-page {
+  position: relative;
+  overflow: hidden;
+  background: #0d5e99;
+}
+
+.cover-page img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  /*
+    Початковий тест.
+    Оскільки 04_cover_complete.png є повним розворотом,
+    залишаємо праву частину — передню обкладинку.
+  */
+  object-position: 82% center;
+}
+
+/* ===== ФІНАЛ ===== */
+
+.final-text .page-content {
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(64, 184, 157, 0.12),
+      transparent 48%
+    ),
+    #ffffff;
+}
+
+.final-text h2 {
+  color: var(--green-dark);
+}
+
+/* ===== ПИТАННЯ ВІД ГЕРОЇВ ===== */
+
+.questions-page .page-content {
+  padding-top: 8%;
+}
+
+.questions-intro {
+  margin: 0 0 6%;
+
+  font-size: clamp(1rem, 1.22vw, 1.15rem);
+  line-height: 1.55;
+
+  color: var(--muted);
+}
+
+.questions-page ol {
+  margin: 0;
+  padding-left: 1.4em;
+
+  display: grid;
+  gap: 0.9em;
+
+  font-size: clamp(0.98rem, 1.15vw, 1.1rem);
+  line-height: 1.45;
+}
+
+.questions-page li {
+  padding-left: 0.25em;
+}
+
+.questions-page li::marker {
+  color: var(--green);
+  font-weight: 800;
+}
+
+/* ===== КНОПКИ ГОРТАННЯ ===== */
+
+.controls {
+  margin-top: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.controls button {
+  appearance: none;
+  border: 0;
+
+  padding: 11px 19px;
+
+  border-radius: 999px;
+
+  font: inherit;
+  font-weight: 750;
+
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #18aa9f,
+      #0a7169
+    );
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 18px rgba(10, 105, 98, 0.18);
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.controls button:hover {
+  transform: translateY(-1px);
+}
+
+.controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+}
+
+#pageIndicator {
+  min-width: 74px;
+
+  text-align: center;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  color: var(--muted);
+}
+
+/* ===== ЕФЕКТ КНИЖКИ ===== */
+
+.stf__item {
+  background: transparent !important;
+}
+
+/*
+  Тінь при гортанні створює сама бібліотека PageFlip.
+  Тут не додаємо жовтих або кремових фільтрів.
+*/
+
+.stf__block {
+  border-radius: 2px;
+}
+
+/* ===== ПЛАНШЕТ ===== */
+
+@media (max-width: 900px) {
+
+  .book-wrapper {
+    padding: 15px 8px 24px;
+  }
+
+  .page-content {
+    padding: 8% 8% 9%;
+  }
+
+  .text-page p {
+    line-height: 1.52;
+  }
+}
+
+/* ===== ТЕЛЕФОН ===== */
+
+@media (max-width: 620px) {
+
+  body {
+    background: #f5fbfc;
+  }
+
+  .book-wrapper {
+    min-height: 100dvh;
+    padding: 8px 4px 18px;
+
+    justify-content: flex-start;
+  }
+
+  #book {
+    margin-top: 4px;
+  }
+
+  .page-content {
+    padding: 8% 8% 9%;
+  }
+
+  .text-page h2,
+  .questions-page h2 {
+    margin-bottom: 6%;
+
+    font-size: 1.36rem;
+  }
+
+  .text-page p {
+    font-size: 1rem;
+    line-height: 1.48;
+  }
+
+  .questions-intro {
+    font-size: 0.96rem;
+  }
+
+  .questions-page ol {
+    gap: 0.65em;
+
+    font-size: 0.94rem;
+    line-height: 1.38;
+  }
+
+  .controls {
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  .controls button {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  #pageIndicator {
+    min-width: 54px;
+    font-size: 0.82rem;
+  }
+}
